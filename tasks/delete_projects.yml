@@ -1,0 +1,7 @@
+---
+- name: Deleting OCP project(s)
+  vars:
+    name: "{{ tenant_name | lower | replace('_', '-') }}-{{ item.name | lower | replace('_', '-') }}"
+  command: "oc delete project {{ name }} --token={{ ocp_token }}"
+  with_items: "{{ projects }}"
+...

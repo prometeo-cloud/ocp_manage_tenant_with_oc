@@ -1,0 +1,38 @@
+---
+- name: Creating OCP Projects
+  command: "oc new-project {{ tenant_name | lower | replace('_', '-') }}-{{ item.name | lower | replace('_', '-') }} --token={{ ocp_token }}"
+  with_items: "{{ projects }}"
+
+- name: Creating role binding for the Admin role (admins)
+  vars:
+    namespace: "{{ tenant_name | lower | replace('_', '-') }}-{{ item.name | lower | replace('_', '-') }}"
+    group: "{{ tenant_name | lower | replace('_', '-') }}-{{ item.name | lower | replace('_', '-') }}-admins"
+    role_binding_name: "admin"
+  command: "oc adm policy add-role-to-group admin {{ group }} -n {{ namespace }} --token={{ ocp_token }}"
+  with_items: "{{ projects }}"
+
+- name: Creating role binding for the View role (users)
+  vars:
+    namespace: "{{ tenant_name | lower | replace('_', '-') }}-{{ item.name | lower | replace('_', '-') }}"
+    group: "{{ tenant_name | lower | replace('_', '-') }}-{{ item.name | lower | replace('_', '-') }}-users"
+    role_binding_name: "view"
+  command: "oc adm policy add-role-to-group view {{ group }} -n {{ namespace }} --token={{ ocp_token }}"
+  with_items: "{{ projects }}"
+
+- name: Creating resource quotas
+  vars:
+    namespace: "{{ tenant_name | lower | replace('_', '-') }}-{{ item.name | lower | replace('_', '-') }}"
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'quota.yml') | from_yaml }}"
+    api_key: "{{ ocp_token }}"
+    verify_ssl: no
+  with_items: "{{ projects }}"
+
+- name: Creating resource quota
+  vars:
+    namespace: "{{ tenant_name | lower | replace('_', '-') }}-{{ item.name | lower | replace('_', '-') }}"
+    quotaName: "{{ namespace }}-quota"
+  command: "oc create quota {{ quotaName }} --hard=cpu={{cpu_quota}},memory={{memory_quota}}G -n {{ namespace }}"
+  with_items: "{{projects}}"
+...

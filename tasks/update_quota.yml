@@ -1,0 +1,14 @@
+---
+- name: Removing any pre-existing resource quotas
+  vars:
+    namespace: "{{ tenant_name | lower | replace('_', '-') }}-{{ item.name | lower | replace('_', '-') }}"
+    quotaName: "{{ namespace }}-quota"
+  command: "oc delete quota {{ quotaName }} -n {{ namespace }}"
+  with_items: "{{ projects }}"
+
+- name: Re-creating resource quotas
+  vars:
+    namespace: "{{ tenant_name | lower | replace('_', '-') }}-{{ item.name | lower | replace('_', '-') }}"
+    quotaName: "{{ namespace }}-quota"
+  command: "oc create quota {{ quotaName }} --hard=cpu={{cpu_quota}},memory={{memory_quota}}G -n {{ namespace }}"
+  with_items: "{{ projects }}"

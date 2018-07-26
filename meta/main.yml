@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  author: gatblau
+  description: create and delete OCP projects, configure role bindings and update resource quotas.
+  license: Apache 2
+  min_ansible_version: 1.2
+...
