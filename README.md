@@ -93,11 +93,30 @@ The playbook [cfg_ocp_manage_tenant](../cfg_ocp_manage_tenant), aggregates the t
 ```
 
 <a name="amend-project-size"></a>
-## How to amend a project's size 
+## How to amend a tenant quotas
+
+The following configuration resets the quotas for the DEV, TEST and DEMO projects in the tenant space.
 
 ```yaml
-
-
+- hosts: localhost
+  tasks: 
+    - name: "updating tenant quota"
+      include_role: 
+        name: ocp_manage_tenant
+        tasks_from: update_quota
+      vars: 
+        ocp_token: "<<add a token here>>"
+        projects: 
+          - name: DEV
+            cpu: 2
+            memory: 4
+          - name: TEST
+            cpu: 2
+            memory: 2
+          - name: DEMO
+            cpu: 4
+            memory: 3
+        tenant_name: Tenant_A
 ```
 
 <a name="python-client"></a>

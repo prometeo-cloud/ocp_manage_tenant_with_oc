@@ -10,5 +10,5 @@
   vars:
     namespace: "{{ tenant_name | lower | replace('_', '-') }}-{{ item.name | lower | replace('_', '-') }}"
     quotaName: "{{ namespace }}-quota"
-  command: "oc create quota {{ quotaName }} --hard=cpu={{cpu_quota}},memory={{memory_quota}}G -n {{ namespace }}"
+  command: "oc create quota {{ quotaName }} --hard=cpu={{ cpu }},memory={{ memory }}G -n {{ namespace }}"
   with_items: "{{ projects }}"
