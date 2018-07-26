@@ -19,16 +19,6 @@
   command: "oc adm policy add-role-to-group view {{ group }} -n {{ namespace }} --token={{ ocp_token }}"
   with_items: "{{ projects }}"
 
-- name: Creating resource quotas
-  vars:
-    namespace: "{{ tenant_name | lower | replace('_', '-') }}-{{ item.name | lower | replace('_', '-') }}"
-  k8s:
-    state: present
-    definition: "{{ lookup('template', 'quota.yml') | from_yaml }}"
-    api_key: "{{ ocp_token }}"
-    verify_ssl: no
-  with_items: "{{ projects }}"
-
 - name: Creating resource quota
   vars:
     namespace: "{{ tenant_name | lower | replace('_', '-') }}-{{ item.name | lower | replace('_', '-') }}"
